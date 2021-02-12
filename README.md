@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # cra-ecom-front-end-swe1
 
 # Getting Started with Create React App

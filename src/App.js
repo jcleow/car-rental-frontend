@@ -1,54 +1,39 @@
 import './App.css';
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import CarCard from './components/CarCard.jsx';
+import Modal from './components/Modal.jsx';
+import TopNavbar from './components/TopNavbar.jsx';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Cart from './components/Cart.jsx';
-import Items from './components/Items.jsx';
-import ItemDetail from './components/ItemDetail.jsx';
-
-const BACKEND_URL = 'http://localhost:3002';
+const BACKEND_URL = 'http://localhost:3004';
 
 export default function App() {
-  const [items, setItems] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [selectedItemIndex, setSelectedItem] = useState();
 
-  const addToCart = (item, quantity) => {
-    const cartItem = { quantity, ...item };
-    setCart([cartItem, ...cart]);
-  };
-
-  const emptyCart = () => {
-    setCart([]);
-  };
-
-  const setItemDetail = (itemIndex) => {
-    setSelectedItem(itemIndex);
-  };
-
-  const getItems = () => {
-    axios.get(BACKEND_URL+'/items').then((result) => {
-      console.log(result);
-      setItems(result.data.items);
-    });
-  };
-
-  const selectedItem = items[selectedItemIndex];
+// const getAllCars = () =>{
+//   axios.get('/cars/index')
+//   .then((result)=>{
+//     console.log(result,'result')
+//     const listOfCarCards = result.data.map(car=>{
+//       return <CarCard car={car}/>
+//     })
+//   })
+//   .catch(err=>console.log(err))
+// }
+useEffect(()=>{
+  // getAllCars()
+},[])
 
   return (
-    <div className="container">
-      <div className="row">
-        <h1 className="page-title">Wow Shopping!</h1>
-        <Items items={items} setItemDetail={setItemDetail} />
-        {items.length === 0 && (
-          <button type="button" onClick={getItems}>
-            Get Items
-          </button>
-        )}
-        <ItemDetail item={selectedItem} addToCart={addToCart} />
-        <Cart items={cart} emptyCart={emptyCart} />
+    <div>
+      <TopNavbar />
+    <div className='container'>
+      <div className='row'>
+        <div className='col'>
+          {}
+        </div>
       </div>
+    </div>
     </div>
   );
 }
