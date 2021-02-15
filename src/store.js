@@ -1,12 +1,14 @@
 /* eslint-disable no-unused-expressions */
-import React,{useReducer} from 'react';
+import React,{useReducer,useEffect} from 'react';
 import axios from 'axios';
+import CarCard from './components/CarCard';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval'
 axios.defaults.withCredentials=true;
 const BACKEND_URL = 'http://localhost:3004';
 
 const initialState = {  
   cars :[],
+  carCards: [],
   bookings:[],
   blockedDates:{},
   currentCarIndex:null,
@@ -22,9 +24,12 @@ const bookingReducer=(state,action)=>{
       const selectedIndex = state.bookings.findIndex((booking)=>booking.bookingId === action.payload.bookingId)
       state.bookings[selectedIndex] = action.payload      
       return {...state}
-    case 'update':
-      console.log({...state, blockedDates:{...state.blockedDates,...action.payload}},'blocked dates');
+    case 'updateBlockedDates':      
       return {...state, blockedDates:{...state.blockedDates,...action.payload}}
+    case 'updateAvailCars':
+      return {...state, cars:[...action.payload]}
+    case 'updateAvailCarCards':
+      return {...state, carCards:[...action.payload]}
     default:
       return null;
   }
@@ -45,34 +50,46 @@ export const bookCarAction = (bookingId,bookingInfo) => {
   }
 }
 
-export const cancelCarAction = (bookingId,carId) => {
+export const updateAvailCarCardsAction = (arrayOfAvailCarCards) =>{
   return{
-    type:'book',
-    payload:{
-      bookingId,
-      userId:null,
-      carId,
-      booking: null
-    }
+    type:'updateAvailCarCards',
+    payload: [...arrayOfAvailCarCards]    
   }
 }
+
+export const updateAvailCarsAction = (arrayOfAvailCars) => {
+  return{
+    type:'updateAvailCars',
+    payload: [...arrayOfAvailCars]
+  }
+}
+
+// export const cancelCarAction = (bookingId,carId) => {
+//   return{
+//     type:'book',
+//     payload:{
+//       bookingId,
+//       userId:null,
+//       carId,
+//       booking: null
+//     }
+//   }
+// }
 
 export const updateBookedDatesAction = (bookedDates,carId)=>{
   const arrOfBookedDates = bookedDates.map((booking)=>{
     const blockDates = eachDayOfInterval({start: new Date(booking.startDate),end: new Date(booking.endDate)})
     return blockDates
   })
-  console.log(arrOfBookedDates,'arrOfBookedDates')
-
+  
   const mergedBookedDates = [].concat.apply([],arrOfBookedDates)
   const setOfDates = new Set();
   mergedBookedDates.forEach((date)=>{setOfDates.add(date)})
 
-  console.log(setOfDates);
   const allBlockedDates = Array.from(setOfDates);
   
   return{
-    type:'update',
+    type:'updateBlockedDates',
     payload: {[carId]:allBlockedDates}              
   }
 }
@@ -80,6 +97,7 @@ export const updateBookedDatesAction = (bookedDates,carId)=>{
 
 //Create a provider
 export const BookingContext = React.createContext(null);
+
 
 // create the provider to use below
 const {Provider} = BookingContext;
@@ -90,7 +108,28 @@ export function CarProvider({children}) {
   const [store, dispatchBooking] = useReducer(bookingReducer, initialState);
   // surround the children elements with
   // the context provider we created above
+
+  //Helper to get all cars
+  const getAllCars = () => {
+    axios.get(`${BACKEND_URL}/availableCars`)
+      .then((result) => {
+        const arrayOfCarCards = result.data.availableCars.map((car, index) => (
+          <div className="col-12">
+            <CarCard key={index} car={car} />
+          </div>
+        ));
+        dispatchBooking(updateAvailCarCardsAction(arrayOfCarCards));
+        dispatchBooking(updateAvailCarsAction(result.data.availableCars))
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    getAllCars();
+  }, []);
+  console.log('test');
+
   return (<Provider value={{store, dispatchBooking}}>
-      {children}
-    </Provider>)
+    {children}
+  </Provider>)
 }
