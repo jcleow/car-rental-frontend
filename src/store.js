@@ -76,7 +76,8 @@ export const updateAvailCarsAction = (arrayOfAvailCars) => {
 //   }
 // }
 
-export const updateBookedDatesAction = (bookedDates,carId)=>{
+//Update all the booked/blocked dates of all cars
+export const updateBlockedDatesAction = (bookedDates,carId)=>{
   const arrOfBookedDates = bookedDates.map((booking)=>{
     const blockDates = eachDayOfInterval({start: new Date(booking.startDate),end: new Date(booking.endDate)})
     return blockDates
@@ -87,7 +88,7 @@ export const updateBookedDatesAction = (bookedDates,carId)=>{
   mergedBookedDates.forEach((date)=>{setOfDates.add(date)})
 
   const allBlockedDates = Array.from(setOfDates);
-  
+  //Dates are all in date object form
   return{
     type:'updateBlockedDates',
     payload: {[carId]:allBlockedDates}              
@@ -102,6 +103,16 @@ export const BookingContext = React.createContext(null);
 // create the provider to use below
 const {Provider} = BookingContext;
 
+export function genArrOfCarCards(availableCarsData){
+  const arrayOfCarCards = availableCarsData.map((car, index) => (
+    <div className="col-12">
+      <CarCard key={index} car={car} />
+    </div>
+  ))
+  return arrayOfCarCards
+}
+
+
 export function CarProvider({children}) {
   // create the dispatch function in one place and put in into context
   // where it will be accessible to all of the children
@@ -113,11 +124,11 @@ export function CarProvider({children}) {
   const getAllCars = () => {
     axios.get(`${BACKEND_URL}/availableCars`)
       .then((result) => {
-        const arrayOfCarCards = result.data.availableCars.map((car, index) => (
-          <div className="col-12">
-            <CarCard key={index} car={car} />
-          </div>
-        ));
+        // const arrayOfCarCards = result.data.availableCars.map((car, index) => (
+        //   <div className="col-12">
+        //     <CarCard key={index} car={car} />
+        //   </div>
+        const arrayOfCarCards = genArrOfCarCards(result.data.availableCars);        
         dispatchBooking(updateAvailCarCardsAction(arrayOfCarCards));
         dispatchBooking(updateAvailCarsAction(result.data.availableCars))
       })
@@ -126,8 +137,7 @@ export function CarProvider({children}) {
 
   useEffect(() => {
     getAllCars();
-  }, []);
-  console.log('test');
+  }, []); 
 
   return (<Provider value={{store, dispatchBooking}}>
     {children}

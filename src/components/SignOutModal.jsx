@@ -1,11 +1,10 @@
 import "../App.css";
 import { useState } from "react";
-import DatePicker from 'react-datepicker';
+import {Button} from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function SignOutModal(ChildComponent) {
   const [isVisible, setIsVisible] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
   if (isVisible) {
     return (
       <div className="rental-modal-container">
@@ -20,7 +19,7 @@ export default function SignOutModal(ChildComponent) {
   } else {
     return (
       <div>
-        <button onClick={() => setIsVisible(true)}>Sign Out</button>
+        <Button variant='outline-danger' onClick={() => setIsVisible(true)}>Sign Out</Button>
       </div>
     );
   }

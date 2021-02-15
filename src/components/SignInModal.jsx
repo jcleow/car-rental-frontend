@@ -1,6 +1,6 @@
 import "../App.css";
 import { useState } from "react";
-import DatePicker from 'react-datepicker';
+import {Button} from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
 
 
@@ -20,7 +20,7 @@ export default function SignInModal(ChildComponent) {
   } else {
     return (
       <div>
-        <button onClick={() => setIsVisible(true)}>Sign In</button>
+        <Button variant='primary' onClick={() => setIsVisible(true)}>Sign In</Button>
       </div>
     );
   }

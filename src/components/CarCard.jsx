@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useContext, useEffect } from 'react';
 import Modal from './Modal.jsx';
-import { BookingContext, updateBookedDatesAction } from '../store';
+import { BookingContext, updateBlockedDatesAction } from '../store';
 
 import getUserIdFromCookie from '../getUserIdFromCookie';
 
@@ -29,7 +29,7 @@ export default function CarCard({ car }) {
       axios.get(`${BACKEND_URL}/unavailableDates/${carId}`)
         .then((response) => {
           if (response.data.length > 0) {
-            dispatchBooking(updateBookedDatesAction(response.data, carId));
+            dispatchBooking(updateBlockedDatesAction(response.data, carId));
           }
         })
         .catch((err) => console.log(err));

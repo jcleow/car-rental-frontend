@@ -13,7 +13,6 @@ export default function App() {
 // Default all axios requests to have withCredentialsTrue
   axios.defaults.withCredentials = true;
  
-
   return (
     <div>
       <CarProvider>
